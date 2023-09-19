@@ -2,15 +2,19 @@ const { Order } = require('./order')
 
 class OrderBook {
   constructor(rpcClient, rpcKey, subClient, pubsubKey) {
+    console.log(`OrderBook#constructor`)
+
     this.rpcClient = rpcClient
-    this.subClient = subClient
     this.rpcKey = rpcKey
+    this.subClient = subClient
     this.pubsubKey = pubsubKey
     this.orders = []
     this.timeout = 10000
   }
 
   init() {
+    console.log(`OrderBook#init`)
+
     this.subClient.on('message', (message) => {
       this._handleSubMessage(message)
     })
@@ -21,6 +25,8 @@ class OrderBook {
   }
 
   _handleSubMessage(message) {
+    console.log(`OrderBook#_handleSubMessage`, message)
+
     const { command, payload } = JSON.parse(message)
 
     switch (command) {
@@ -43,6 +49,8 @@ class OrderBook {
   }
 
   async addOrder(order) {
+    console.log(`OrderBook#addOrder`, order)
+
     const message = {
       command: 'addOrder',
       payload: order.serialize(),
@@ -68,6 +76,8 @@ class OrderBook {
   }
 
   async removeOrder(order) {
+    console.log(`OrderBook#removeOrder`, order)
+
     const message = {
       command: 'removeOrder',
       payload: order.serialize(),
