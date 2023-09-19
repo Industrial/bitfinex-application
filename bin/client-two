@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+export GRAPE_NODE=http://127.0.0.1:40001
+node src/client.js
