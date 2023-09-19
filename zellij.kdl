@@ -1,0 +1,35 @@
+layout {
+  tab name="scratch" {
+    pane size=1 borderless=true {
+      plugin location="zellij:tab-bar"
+    }
+
+    pane {
+      cwd "/home/tom/Code/code9/node/test-bitfinex"
+    }
+
+    pane size=1 borderless=true {
+      plugin location="zellij:status-bar"
+    }
+  }
+
+  tab name="project" {
+    pane size=1 borderless=true {
+      plugin location="zellij:tab-bar"
+    }
+
+    pane {
+      cwd "/home/tom/Code/code9/node/test-bitfinex"
+    }
+
+    pane size=1 borderless=true {
+      plugin location="zellij:status-bar"
+    }
+  }
+}
+
+keybinds {
+  normal {
+    unbind "Ctrl q"
+  }
+}

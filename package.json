@@ -1,0 +1,37 @@
+{
+  "name": "skeleton-nextjs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "lint": "pnpm lint:tsc && pnpm lint:eslint",
+    "lint:eslint": "eslint --fix --cache .",
+    "lint:tsc": "tsc -p . --noEmit",
+    "pre-commit": "lint-staged",
+    "start": "next start",
+    "grape": "grape",
+    "server": "node src/server.js",
+    "client": "node src/client.js"
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs,jsx,ts,tsx,json}": "pnpm lint"
+  },
+  "dependencies": {
+    "@types/node": "20.5.6",
+    "eslint": "8.48.0",
+    "eslint-config-next": "13.4.19",
+    "grenache-grape": "^0.9.12",
+    "grenache-nodejs-http": "^0.7.13",
+    "grenache-nodejs-link": "^1.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "5.2.2"
+  },
+  "devDependencies": {
+    "@types/eslint": "8.44.2",
+    "@types/lint-staged": "^13.2.0",
+    "eslint-config-code9": "^0.3.0",
+    "eslint-plugin-prettier": "5.0.0",
+    "lint-staged": "^14.0.1"
+  }
+}
