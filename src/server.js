@@ -38,40 +38,105 @@ const main = async () => {
   pubService.listen(pubPort)
   console.log(`PUB server listening on port ${pubPort}`)
 
+  let orders = []
+
+  const getMatchingOrders = (order) => {
+    return orders.filter((existingOrder) => {
+      return (
+        existingOrder.id !== order.id &&
+        existingOrder.amount * order.amount < 0 &&
+        Math.abs(existingOrder.price - order.price) < Number.EPSILON
+      )
+    })
+  }
+
+  const addOrder = (order) => {
+    const matchingOrders = getMatchingOrders(order)
+
+    if (matchingOrders.length === 0) {
+      orders.push(order)
+      pubService.pub(
+        JSON.stringify({
+          command: 'addOrder',
+          payload: order,
+        }),
+      )
+      return
+    }
+
+    for (const matchingOrder of matchingOrders) {
+      if (Math.abs(matchingOrder.amount) >= Math.abs(order.amount)) {
+        matchingOrder.amount += order.amount
+        order.amount = 0
+        break
+      } else {
+        order.amount += matchingOrder.amount
+        matchingOrder.amount = 0
+      }
+    }
+
+    const fulfilledOrders = orders.filter((existingOrder) => {
+      return existingOrder.amount === 0
+    })
+    fulfilledOrders.forEach((fulfilledOrder) => {
+      pubService.pub(
+        JSON.stringify({
+          command: 'removeOrder',
+          payload: fulfilledOrder,
+        }),
+      )
+    })
+
+    orders = orders.filter((existingOrder) => {
+      return existingOrder.amount !== 0
+    })
+
+    if (order.amount !== 0) {
+      orders.push(order)
+      pubService.pub(
+        JSON.stringify({
+          command: 'addOrder',
+          payload: order,
+        }),
+      )
+    }
+  }
+
+  const removeOrder = (order) => {
+    orders = orders.filter((existingOrder) => {
+      return existingOrder.id !== order.id
+    })
+
+    pubService.pub(
+      JSON.stringify({
+        command: 'removeOrder',
+        payload: order,
+      }),
+    )
+  }
+
+  rpcService.on('request', (rid, key, message, handler) => {
+    const { command, payload } = message
+
+    switch (command) {
+      case 'addOrder':
+        addOrder(payload)
+        break
+      case 'removeOrder':
+        removeOrder(payload)
+        break
+      default:
+        console.error(`unknown command: ${command}`)
+        break
+    }
+
+    handler.reply(null, {})
+  })
+
   setInterval(() => {
-    // console.log('announce-orderbook')
     link.announce(rpcKey, rpcService.port, {})
     link.announce(pubsubKey, pubService.port, {})
-
-    // console.log('announce-orderbook:pub')
-    // pubService.pub(
-    //   JSON.stringify({
-    //     command: 'addOrder',
-    //     payload: {
-    //       test: '123',
-    //     },
-    //   }),
-    // )
   }, 1000)
-
-  rpcService.on('request', (rid, key, payload, handler) => {
-    // console.log('request')
-    // console.log('request:rid', rid)
-    // console.log('request:key', key)
-    // console.log('request:payload', payload)
-    // console.log('request:handler', handler)
-
-    // const response = {
-    //   msg: 'world',
-    //   payload,
-    // }
-
-    // console.log('request:rpc:replying')
-    handler.reply(null, {})
-
-    // console.log('request:pub:publishing')
-    pubService.pub(JSON.stringify(payload))
-  })
 }
 
 main().catch((error) => {

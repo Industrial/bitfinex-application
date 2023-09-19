@@ -1,5 +1,6 @@
 const Link = require('grenache-nodejs-link')
-const { Order, OrderBook } = require('./order-book')
+const { Order } = require('./order')
+const { OrderBook } = require('./order-book')
 const { PeerSub, PeerRPCClient } = require('grenache-nodejs-ws')
 
 const timeout = 10000
