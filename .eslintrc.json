@@ -1,3 +1,8 @@
 {
-  "extends": "eslint-config-code9"
+  "extends": "eslint-config-code9",
+  "rules": {
+    "no-underscore-dangle": [
+      "off"
+    ]
+  }
 }
